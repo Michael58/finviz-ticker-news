@@ -6,6 +6,7 @@
     "version": "0.1",
     "buildTag": "latest",
     "input": "./input_schema.json",
+    "readme": "./README.md",
     "dockerfile": "../Dockerfile",
     "seoTitle": "Stock News Scraper by Ticker - Full Article Text API",
     "seoDescription": "Scrape stock and company news by ticker symbol. Get headlines, sources, dates, and full article text as markdown. Supports AAPL, TSLA, NVDA and any ticker. For AI agents and sentiment analysis.",

@@ -1,157 +1,81 @@
-# Stock News Scraper - Finviz
+# Finviz Ticker News Scraper
 
-Get real-time stock and company news for any ticker symbol with **full article text as clean markdown**. Powered by [Finviz](https://finviz.com) data. Built for AI agents, sentiment analysis, and market research.
+Apify actor that scrapes stock news from [Finviz](https://finviz.com) by ticker symbol. Returns headlines, sources, timestamps, and full article text as clean Markdown.
 
-## **What is Finviz Ticker News Scraper?**
+Published on the Apify platform: [apify.com/michael_b/finviz-ticker-news](https://apify.com/michael_b/finviz-ticker-news)
 
-This actor extracts recent stock news from [Finviz](https://finviz.com) for any publicly traded ticker. It returns article headlines, source domains, timestamps, and optionally the **full article text converted to clean markdown**.
+## How it works
 
-Finviz aggregates news from Reuters, Yahoo Finance, CNBC, MarketWatch, Benzinga, and dozens more. This actor gives you structured, API-accessible data from all of them in a single run. No browser needed, no API key required.
+1. Fetches the Finviz news table for each ticker using `curl_cffi` (Chrome TLS impersonation)
+2. Parses article metadata (title, source, date, URL)
+3. Optionally follows each article link to extract full text as Markdown
+4. Source-specific handlers for Yahoo Finance (consent wall bypass), Finviz blog, and a generic readability fallback
+5. Skips paywalled sources (WSJ, Bloomberg, FT, Barron's, Economist, SeekingAlpha)
 
-## **Why scrape stock news from Finviz?**
+## Run on Apify
 
-Finviz is one of the most popular financial research platforms, but it has **no public API for news data**. This actor solves that by delivering structured JSON with full article text, ready for AI pipelines, trading systems, or market research.
+The easiest way to use this is through the [Apify platform](https://apify.com/michael_b/finviz-ticker-news). No setup needed.
 
-## **How to scrape stock news by ticker**
+## Run locally
 
-1. Go to the [Finviz Ticker News](https://apify.com/michael_b/finviz-ticker-news) actor page
-2. Enter one or more ticker symbols (e.g. `TSLA, NVDA, AAPL`)
-3. Set how many articles and how far back you want
-4. Click **Start**
-5. Download results as **JSON, CSV, or Excel**, or access via the Apify API
+### Prerequisites
 
-## **Input**
+- Python 3.11+
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `tickers` | string | *(required)* | Comma-separated ticker symbols, e.g. `AAPL, TSLA, MSFT` |
-| `maxArticles` | integer | 50 | Max articles per ticker. `0` = no limit |
-| `daysBack` | integer | 7 | Articles from the last N days. `0` = all available |
-| `scrapeFullText` | boolean | true | Extract full article text as markdown. `false` = metadata only (faster) |
+### Setup
 
-```json
-{
-    "tickers": "TSLA, NVDA",
-    "maxArticles": 30,
-    "daysBack": 7,
-    "scrapeFullText": true
-}
+```bash
+git clone https://github.com/Michael58/finviz-ticker-news.git
+cd finviz-ticker-news
+pip install -r requirements.txt
 ```
 
-## **Output**
+### Run with Apify CLI
 
-```json
-{
-    "ticker": "TSLA",
-    "title": "Tesla Surges on Record Deliveries",
-    "url": "https://www.reuters.com/business/autos/tesla-record-deliveries-2025",
-    "source": "reuters.com",
-    "publishedAt": "2025-02-05T14:30:00Z",
-    "fullTextAvailable": true,
-    "text": "# Tesla Surges on Record Deliveries\n\nTesla reported record quarterly deliveries of...",
-    "wordCount": 847
-}
+```bash
+apify run -i '{"tickers": "AAPL, TSLA", "maxArticles": 10, "daysBack": 7, "scrapeFullText": true}'
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `ticker` | string | Stock ticker symbol |
-| `title` | string | Article headline |
-| `url` | string | Original article URL |
-| `source` | string | Source domain (e.g. `reuters.com`) |
-| `publishedAt` | string | ISO 8601 UTC timestamp |
-| `fullTextAvailable` | boolean | Whether full text was extracted |
-| `text` | string/null | Article text as markdown, null if paywalled |
-| `wordCount` | integer/null | Word count of extracted text |
+Results are saved to `storage/datasets/default/`.
 
-## **Use cases for stock news data**
+### Run without Apify
 
-| Use Case | Description | Best For |
-|----------|-------------|----------|
-| **Sentiment analysis** | Process full article text to extract market signals and sentiment scores | Quant traders, analysts |
-| **AI agent research** | Feed real-time company news into AI agents via Apify MCP | ChatGPT, Claude, custom agents |
-| **LLM context** | Inject recent news into prompts for summarization or Q&A | RAG pipelines, chatbots |
-| **Market monitoring** | Track news flow across a portfolio on a daily schedule | Portfolio managers |
-| **Trading signals** | Detect breaking news from article frequency and sources | Algorithmic trading |
-| **Newsletter automation** | Aggregate daily stock news into automated reports | Financial content creators |
-| **Research datasets** | Build historical news datasets for backtesting or ML training | Data scientists |
-
-## **How to scrape stock news with Python**
+The scraper and article extractor work standalone:
 
 ```python
-from apify_client import ApifyClient
+from src.finviz_scraper import scrape_ticker_news
+from src.article_extractor import extract_article_text
 
-client = ApifyClient("YOUR_APIFY_TOKEN")
+articles = scrape_ticker_news("AAPL", max_articles=10, days_back=7)
 
-run = client.actor("michael_b/finviz-ticker-news").call(run_input={
-    "tickers": "TSLA, NVDA, AAPL",
-    "maxArticles": 20,
-    "scrapeFullText": True,
-})
-
-for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-    print(f"[{item['ticker']}] {item['source']} — {item['title']}")
+for article in articles:
+    text = extract_article_text(article["url"])
+    print(f"{article['source']} - {article['title']}")
+    print(text[:200] if text else "(paywalled or unavailable)")
+    print()
 ```
 
-## **How to scrape stock news with JavaScript**
+## Project structure
 
-```javascript
-import { ApifyClient } from 'apify-client';
-
-const client = new ApifyClient({ token: 'YOUR_APIFY_TOKEN' });
-
-const run = await client.actor('michael_b/finviz-ticker-news').call({
-    tickers: 'TSLA, NVDA, AAPL',
-    maxArticles: 20,
-    scrapeFullText: true,
-});
-
-const { items } = await client.dataset(run.defaultDatasetId).listItems();
-items.forEach(item => console.log(`[${item.ticker}] ${item.source} — ${item.title}`));
+```
+src/
+  main.py               # Apify Actor entry point
+  finviz_scraper.py     # Finviz news table scraper
+  article_extractor.py  # Full text extraction with source-specific handlers
+.actor/
+  actor.json            # Apify actor configuration
+  input_schema.json     # Input parameters schema
+  README.md             # Apify actor page documentation
 ```
 
-## **How much does it cost to scrape stock news?**
+## Tech stack
 
-This actor uses raw HTTP requests with no browser, keeping costs minimal. Recommended memory: **512 MB**. Pricing: **$0.001 per article** plus a minimal actor start fee. Full text extraction doesn't cost extra.
+- **curl_cffi** - HTTP requests with Chrome TLS fingerprint impersonation
+- **BeautifulSoup** - HTML parsing
+- **readability-lxml** - Article content extraction
+- **html2text** - HTML to Markdown conversion
+- **Apify SDK** - Actor framework, dataset storage, scheduling
 
-| Scenario | Articles | Time | Cost |
-|----------|----------|------|------|
-| 1 ticker, metadata only | 100 | ~5s | ~$0.10 |
-| 1 ticker, full text | 100 | ~30s | ~$0.10 |
-| 5 tickers, full text | 500 | ~2 min | ~$0.50 |
-| 10 tickers, full text | 1,000 | ~3 min | ~$1.00 |
+## License
 
-## **Automate with Apify platform**
-
-- **Schedule runs** daily, hourly, or at market open/close
-- **Access results via API** for integration into trading systems
-- **Connect to Make, n8n, or Zapier** for no-code workflows
-- **Use with AI agents** through Apify's MCP server (Claude, ChatGPT, custom agents)
-- **Export** as JSON, CSV, Excel, or stream to your database
-
-## **FAQ**
-
-**Is it legal to scrape news from Finviz?**
-This actor only extracts publicly available headlines and visits original article URLs for publicly available content. No private data is accessed or authentication bypassed.
-
-**How often is the data updated?**
-Live data from Finviz on every run. Schedule as frequently as you need.
-
-**Which news sources does Finviz aggregate?**
-Reuters, Yahoo Finance, CNBC, MarketWatch, Benzinga, Investor's Business Daily, The Motley Fool, and many more.
-
-**Can I use this with ChatGPT, Claude, or other AI agents?**
-Yes. Fully compatible with Apify's MCP server. The markdown output is designed for LLM consumption.
-
-**What happens with paywalled articles (WSJ, Bloomberg, FT)?**
-Headline and metadata are still returned, but `text` will be `null`. You get the title, source, URL, and date regardless.
-
-**How many articles are available per ticker?**
-Finviz stores up to 100 recent articles per ticker. Use `daysBack: 0` to get all available.
-
-**Can I scrape multiple tickers at once?**
-Yes. Enter comma-separated tickers like `AAPL, TSLA, MSFT, NVDA` and the actor processes all of them in a single run.
-
-## **Support**
-
-Questions, feature requests, or bugs? Open an issue in the [Issues tab](https://apify.com/michael_b/finviz-ticker-news/issues). Feedback is always welcome.
+MIT
