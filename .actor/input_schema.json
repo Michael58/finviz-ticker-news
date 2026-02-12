@@ -1,0 +1,38 @@
+{
+    "title": "Stock News Scraper - Finviz",
+    "description": "Enter one or more stock ticker symbols to get recent news with full article text. Try it now with the prefilled AAPL ticker, then click Start. <a href='https://apify.com/michael_b/finviz-ticker-news#-how-to-scrape-stock-news-by-ticker' target='_blank'>See the full guide</a> for tips on getting the best results.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "tickers": {
+            "title": "Ticker Symbols",
+            "type": "string",
+            "description": "Enter one or more stock ticker symbols, separated by commas. Examples: AAPL, TSLA, MSFT, NVDA, AMZN.",
+            "editor": "textfield",
+            "prefill": "AAPL"
+        },
+        "maxArticles": {
+            "title": "Max Articles Per Ticker",
+            "type": "integer",
+            "description": "Maximum number of articles to return per ticker. Finviz stores up to 100 recent articles per ticker. Set to 0 for no limit.",
+            "default": 50,
+            "minimum": 0,
+            "sectionCaption": "Advanced Options",
+            "sectionDescription": "Fine-tune how many articles to scrape and whether to extract full article text."
+        },
+        "daysBack": {
+            "title": "Days Back",
+            "type": "integer",
+            "description": "Only include articles published within the last N days. Set to 0 to include all available articles.",
+            "default": 7,
+            "minimum": 0
+        },
+        "scrapeFullText": {
+            "title": "Extract Full Article Text",
+            "type": "boolean",
+            "description": "Visit each article URL and extract the full text as clean markdown. When disabled, only headlines and metadata are returned (much faster, lower cost).",
+            "default": true
+        }
+    },
+    "required": ["tickers"]
+}

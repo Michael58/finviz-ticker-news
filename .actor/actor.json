@@ -1,0 +1,67 @@
+{
+    "actorSpecification": 1,
+    "name": "finviz-ticker-news",
+    "title": "Stock News Scraper - Finviz",
+    "description": "Get real-time stock and company news for any ticker symbol. Returns headlines, sources, publication dates, and full article text as clean markdown. Powered by Finviz data. Supports multiple tickers per run. Built for AI agents, LLM pipelines, sentiment analysis, and automated market monitoring.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "seoTitle": "Stock News Scraper by Ticker - Full Article Text API",
+    "seoDescription": "Scrape stock and company news by ticker symbol. Get headlines, sources, dates, and full article text as markdown. Supports AAPL, TSLA, NVDA and any ticker. For AI agents and sentiment analysis.",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Finviz Ticker News",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "transformation": {
+                        "fields": [
+                            "ticker",
+                            "title",
+                            "source",
+                            "publishedAt",
+                            "fullTextAvailable",
+                            "wordCount",
+                            "url"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "ticker": {
+                                "label": "Ticker",
+                                "format": "text"
+                            },
+                            "title": {
+                                "label": "Headline",
+                                "format": "text"
+                            },
+                            "source": {
+                                "label": "Source",
+                                "format": "text"
+                            },
+                            "publishedAt": {
+                                "label": "Published",
+                                "format": "text"
+                            },
+                            "fullTextAvailable": {
+                                "label": "Full Text",
+                                "format": "boolean"
+                            },
+                            "wordCount": {
+                                "label": "Words",
+                                "format": "number"
+                            },
+                            "url": {
+                                "label": "URL",
+                                "format": "link"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

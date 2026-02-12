@@ -1,0 +1,11 @@
+storage/
+__pycache__/
+*.pyc
+*.xlsx
+*.html
+notes.txt
+.env
+nul
+.claude
+full-icon.png
+src/dev.py
