@@ -32,6 +32,8 @@ pip install -r requirements.txt
 
 ### Run with Apify CLI
 
+Requires [Apify CLI](https://docs.apify.com/cli) (`npm install -g apify-cli`). No account needed for local runs.
+
 ```bash
 apify run -i '{"tickers": "AAPL, TSLA", "maxArticles": 10, "daysBack": 7, "scrapeFullText": true}'
 ```
