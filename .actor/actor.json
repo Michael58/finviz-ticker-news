@@ -58,7 +58,7 @@
                     "text": {
                         "type": ["string", "null"],
                         "title": "Article text",
-                        "description": "Full article text extracted from the source website and converted to clean markdown. Null if extraction failed or scrapeFullText is disabled. Truncated to 15,000 characters.",
+                        "description": "Full article text extracted from the source website and converted to clean markdown. Null if extraction failed or scrapeFullText is disabled. Truncated to maxArticleLength characters (default 15,000, set to 0 for no limit).",
                         "example": "# Apple Reports Record Q1 Revenue\n\nApple reported quarterly revenue of $124 billion..."
                     },
                     "wordCount": {

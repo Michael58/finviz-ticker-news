@@ -12,7 +12,7 @@ import time
 from apify import Actor
 
 from .finviz_scraper import scrape_ticker_news
-from .article_extractor import extract_article_text
+from .article_extractor import extract_article_text, set_max_article_length
 
 CONCURRENCY = 5
 
@@ -28,6 +28,9 @@ async def main():
         max_articles = actor_input.get("maxArticles", 50)
         days_back = actor_input.get("daysBack", 7)
         scrape_full_text = actor_input.get("scrapeFullText", True)
+        max_article_length = actor_input.get("maxArticleLength", 15000)
+
+        set_max_article_length(max_article_length)
 
         if not tickers:
             Actor.log.error("No ticker symbols provided. Exiting.")

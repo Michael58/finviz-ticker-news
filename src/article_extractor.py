@@ -17,7 +17,14 @@ from bs4 import BeautifulSoup
 import html2text
 import re
 
-MAX_ARTICLE_LENGTH = 15000  # characters
+MAX_ARTICLE_LENGTH = 15000  # characters, 0 = no limit
+
+
+def set_max_article_length(length):
+    """Set the max article length from actor input. 0 means no limit."""
+    global MAX_ARTICLE_LENGTH
+    MAX_ARTICLE_LENGTH = length
+
 
 PAYWALLED_DOMAINS = [
     "wsj.com",
@@ -48,7 +55,10 @@ def clean_markdown(md):
     """Normalize whitespace and truncate."""
     md = re.sub(r"\n{3,}", "\n\n", md)
     md = re.sub(r" {2,}", " ", md)
-    return md.strip()[:MAX_ARTICLE_LENGTH]
+    md = md.strip()
+    if MAX_ARTICLE_LENGTH > 0:
+        md = md[:MAX_ARTICLE_LENGTH]
+    return md
 
 
 def html_to_markdown(html_fragment):

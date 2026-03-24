@@ -32,6 +32,13 @@
             "type": "boolean",
             "description": "Visit each article URL and extract the full text as clean markdown. When disabled, only headlines and metadata are returned (much faster, lower cost).",
             "default": true
+        },
+        "maxArticleLength": {
+            "title": "Max Article Length (characters)",
+            "type": "integer",
+            "description": "Maximum number of characters to keep per article. Longer articles are truncated. Useful for keeping output size manageable for LLM context windows. Set to 0 for no limit.",
+            "default": 15000,
+            "minimum": 0
         }
     },
     "required": ["tickers"]
