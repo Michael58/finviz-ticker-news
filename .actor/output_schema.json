@@ -1,0 +1,13 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Stock news articles by ticker",
+    "description": "News articles for stock ticker symbols. Headlines and metadata are collected from Finviz news tables, then each article link is followed to extract full text from the original source (Yahoo Finance, Reuters, etc.) as clean markdown.",
+    "properties": {
+        "results": {
+            "type": "string",
+            "title": "News Articles",
+            "description": "Dataset of news articles per ticker, including headlines, sources, publication dates, and full article text as markdown.",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}

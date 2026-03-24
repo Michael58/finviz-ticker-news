@@ -6,6 +6,7 @@
     "version": "0.1",
     "buildTag": "latest",
     "input": "./input_schema.json",
+    "output": "./output_schema.json",
     "readme": "./README.md",
     "dockerfile": "../Dockerfile",
     "seoTitle": "Stock News Scraper by Ticker - Full Article Text API",
@@ -14,6 +15,61 @@
         "dataset": {
             "actorSpecification": 1,
             "title": "Finviz Ticker News",
+            "fields": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object",
+                "properties": {
+                    "ticker": {
+                        "type": "string",
+                        "title": "Ticker symbol",
+                        "description": "The stock ticker symbol this article is associated with.",
+                        "example": "AAPL"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Headline",
+                        "description": "The article headline as shown on the Finviz news table.",
+                        "example": "Apple Reports Record Q1 Revenue"
+                    },
+                    "url": {
+                        "type": "string",
+                        "title": "Article URL",
+                        "description": "Direct link to the original article on the publisher's website (e.g. Yahoo Finance, Reuters, CNBC).",
+                        "example": "https://finance.yahoo.com/news/apple-reports-record-q1-revenue.html"
+                    },
+                    "source": {
+                        "type": "string",
+                        "title": "Source domain",
+                        "description": "Domain name of the article publisher, extracted from the article URL.",
+                        "example": "finance.yahoo.com"
+                    },
+                    "publishedAt": {
+                        "type": "string",
+                        "title": "Published at",
+                        "description": "Publication date and time in UTC, ISO 8601 format. Parsed from Finviz's news table timestamps.",
+                        "example": "2026-03-15T14:30:00Z"
+                    },
+                    "fullTextAvailable": {
+                        "type": "boolean",
+                        "title": "Full text available",
+                        "description": "Whether the full article text was successfully extracted from the source website. False if the article is behind a paywall or extraction failed.",
+                        "example": true
+                    },
+                    "text": {
+                        "type": ["string", "null"],
+                        "title": "Article text",
+                        "description": "Full article text extracted from the source website and converted to clean markdown. Null if extraction failed or scrapeFullText is disabled. Truncated to 15,000 characters.",
+                        "example": "# Apple Reports Record Q1 Revenue\n\nApple reported quarterly revenue of $124 billion..."
+                    },
+                    "wordCount": {
+                        "type": ["integer", "null"],
+                        "title": "Word count",
+                        "description": "Number of words in the extracted article text. Null if full text was not extracted.",
+                        "example": 856
+                    }
+                },
+                "required": ["ticker", "title", "url", "source", "publishedAt"]
+            },
             "views": {
                 "overview": {
                     "title": "Overview",
