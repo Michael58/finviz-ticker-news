@@ -1,0 +1,13 @@
+name: Build Apify Actor
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: distributhor/workflow-webhook@v1
+        env:
+          webhook_url: ${{ secrets.BUILD_ACTOR_URL }}
+          webhook_secret: ${{ secrets.APIFY_TOKEN }}
