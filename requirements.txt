@@ -1,7 +1,7 @@
-apify>=2.0
-curl-cffi>=0.7
-beautifulsoup4>=4.12
-readability-lxml>=0.8
-lxml>=5.0
-html2text>=2024.2
-pytz
+apify==3.1.0
+curl-cffi==0.15.0
+beautifulsoup4==4.14.3
+readability-lxml==0.8.4.1
+lxml==6.0.2
+html2text==2025.4.15
+pytz==2025.2
