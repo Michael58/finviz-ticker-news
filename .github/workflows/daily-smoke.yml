@@ -15,3 +15,14 @@ jobs:
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
           ACTOR_ID: ${{ secrets.ACTOR_ID }}
+  keepalive:
+    # GitHub turns off schedules in public repos after 60 days without a commit.
+    # Re-enabling the workflow through the API restarts that clock. Separate job
+    # so it still runs when the smoke test fails.
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/daily-smoke.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}
